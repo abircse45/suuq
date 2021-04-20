@@ -1,11 +1,12 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
+import 'package:http/http.dart' as http;
 import 'package:suuq_somali/models/abirrr.dart';
 import 'package:suuq_somali/models/anything_model.dart';
-import 'package:http/http.dart' as http;
 
 class SearchListCategory extends StatefulWidget {
   @override
@@ -13,79 +14,43 @@ class SearchListCategory extends StatefulWidget {
 }
 
 class _SearchListCategoryState extends State<SearchListCategory> {
-  Anything explorBlogModel;
-  List<Cat> blogResponse = [];
-  List<Cat> blogResponse2 = List();
-  bool isLoading = false;
-
   // ignore: missing_return
   Future<List<Cat>> getBlogListJsonData() async {
     String url = "https://suuq.cwprojects.xyz/api/anything";
 
     print("Url : $url");
     final response = await http.get(Uri.parse(url));
+
     try {
       if (response.statusCode == 200) {
-        setState(() {
-          isLoading = true;
-        });
-        explorBlogModel = Anything.fromJson(jsonDecode(response.body));
-
         print("Response Popular Json Data :  ${response.body}");
-
-        blogResponse = explorBlogModel.cats;
-        blogResponse2 = explorBlogModel.cats;
-
-        return blogResponse2;
+        return Anything.fromJson(jsonDecode(response.body)).cats;
       } else {
-        setState(() {
-          isLoading = false;
-        });
+        throw Exception();
       }
     } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+      throw e;
     }
   }
-
-  SubCategoryList subCategoryList;
-  List<ListItemAbir> _list = [];
-  var cat = Cat();
 
   Future<SubCategoryList> categoryList(String slug) async {
     String url = "https://suuq.cwprojects.xyz/api/listings/$slug";
 
-    print(" SuCategory Url : $url");
+    print(" SubCategory Url : $url");
     final response = await http.get(Uri.parse(url));
+
     try {
       if (response.statusCode == 200) {
-        setState(() {
-          isLoading = true;
-        });
-        subCategoryList = SubCategoryList.fromJson(jsonDecode(response.body));
-
-        print("SuCategory....>>  ${response.body}");
-
-        _list = subCategoryList.listItems;
-
-        return subCategoryList;
+        print("SubCategory....>>  ${response.body}");
+        return SubCategoryList.fromJson(
+          jsonDecode(response.body),
+        );
       } else {
-        setState(() {
-          isLoading = false;
-        });
+        throw Exception();
       }
     } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+      throw e;
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-//    getBlogListJsonData();
   }
 
   @override
@@ -115,13 +80,15 @@ class _SearchListCategoryState extends State<SearchListCategory> {
             ),
             child: TextField(
               onChanged: (value) {
-                setState(() {
-                  blogResponse2 = blogResponse
-                      .where((element) => element.catName
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                });
+/*                setState(
+                  () {
+                    blogResponse2 = blogResponse
+                        .where((element) => element.catName
+                            .toLowerCase()
+                            .contains(value.toLowerCase()))
+                        .toList();
+                  },
+                );*/
               },
               cursorColor: Colors.grey,
               style: TextStyle(fontSize: 16.0, color: Colors.black),
@@ -161,77 +128,80 @@ class _SearchListCategoryState extends State<SearchListCategory> {
             height: 5,
           ),
           Expanded(
-            child:FutureBuilder<List<Cat>>(
-              future: getBlogListJsonData(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final list = snapshot.data;
+            child: FutureBuilder<List<Cat>>(
+                future: getBlogListJsonData(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final list = snapshot.data;
 
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    primary: false,
-                    itemCount: list.length,
-                    itemBuilder: (_, index) {
-                      final item = list[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(left: 10.0),
-                        child: ExpansionTile(
-                          trailing: Icon(
-                            Icons.arrow_drop_down_outlined,
-                            color: Colors.white,
-                          ),
-                          title: Text(item.catName),
-                          leading: Image.network(
-                            item.catImg,
-                            cacheHeight: 35,
-                          ),
-                          children: [
-                            FutureBuilder<SubCategoryList>(
-                                future: categoryList(item.catSlug),
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    final list = snapshot.data.listItems;
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      primary: false,
+                      itemCount: list.length,
+                      itemBuilder: (_, index) {
+                        final item = list[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 10.0),
+                          child: ExpansionTile(
+                            trailing: Icon(
+                              Icons.arrow_drop_down_outlined,
+                              color: Colors.white,
+                            ),
+                            title: Text(item.catName),
+                            leading: Image.network(
+                              item.catImg,
+                              cacheHeight: 35,
+                            ),
+                            children: [
+                              FutureBuilder<SubCategoryList>(
+                                  future: categoryList(item.catSlug),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      final list = snapshot.data.listItems;
 
-                                    return ListView.builder(
-                                      shrinkWrap: true,
-                                      primary: false,
-                                      itemCount: list.length,
-                                      itemBuilder: (_, index) {
-                                        final item = list[index];
-                                        return ListTile(
-                                          onTap: () {},
-                                          title: Text(item.listingTitle),
-                                        );
-                                      },
+                                      return ListView.builder(
+                                        shrinkWrap: true,
+                                        primary: false,
+                                        itemCount: list.length,
+                                        itemBuilder: (_, index) {
+                                          final item = list[index];
+                                          return ListTile(
+                                            onTap: () {},
+                                            title: Text(item.listingTitle),
+                                          );
+                                        },
+                                      );
+                                    } else if (snapshot.hasError) {
+                                      return Center(
+                                        child: Text("${snapshot.error}"),
+                                      );
+                                    }
+
+                                    return Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
                                     );
-                                  } else if (snapshot.hasError) {
-                                    return Center(child: Text("${snapshot.error}"),);
-                                  }
+                                  }),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text("${snapshot.error}"),
+                    );
+                  }
 
-                                  return Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Center(
-                                      child: CircularProgressIndicator(),
-                                    ),
-                                  );
-                                }),
-                          ],
-                        ),
-                      );
-                    },
+                  return Center(
+                    child: SpinKitChasingDots(
+                      color: Colors.red,
+                      size: 40,
+                    ),
                   );
-                } else if (snapshot.hasError) {
-                  return Center(child: Text("${snapshot.error}"),);
-                }
-
-                return Center(
-                  child: SpinKitChasingDots(
-                    color: Colors.red,
-                    size: 40,
-                  ),
-                );
-              }
-            ),
+                }),
           ),
         ],
       ),
