@@ -157,10 +157,10 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:suuq_somali/main.dart';
 import 'package:suuq_somali/property/PropertyPage.dart';
-import 'package:suuq_somali/screen/all_add_screen.dart';
-import 'package:suuq_somali/screen/change_password.dart';
-import 'package:suuq_somali/screen/login_screen.dart';
-import 'package:suuq_somali/screen/my_profile.dart';
+import 'file:///D:/suuqsomali/lib/Change_passord/change_password.dart';
+import 'file:///D:/suuqsomali/lib/Login/login_screen.dart';
+import 'AllAds/all_add_screen.dart';
+import 'file:///D:/suuqsomali/lib/Profile/my_profile.dart';
 import 'package:suuq_somali/screen/tabbar_page.dart';
 import 'package:suuq_somali/widget/drawer_screen_two.dart';
 

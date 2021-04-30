@@ -154,11 +154,11 @@ import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:suuq_somali/AllAds/all_add_screen.dart';
 import 'package:suuq_somali/main.dart';
 import 'package:suuq_somali/property/PropertyPage.dart';
-import 'package:suuq_somali/screen/all_add_screen.dart';
-import 'package:suuq_somali/screen/change_password.dart';
-import 'package:suuq_somali/screen/login_screen.dart';
+import 'file:///D:/suuqsomali/lib/Change_passord/change_password.dart';
+import 'file:///D:/suuqsomali/lib/Login/login_screen.dart';
 import 'package:suuq_somali/screen/tabbar_page.dart';
 
 class MenuScreen2 extends StatefulWidget {

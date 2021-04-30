@@ -176,8 +176,7 @@ class CarLatestDetails extends StatelessWidget {
             child: Text(listingAddress),
           ),
 
-          Expanded(
-            child: Padding(
+        Padding(
               padding: const EdgeInsets.only(left: 5.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -327,7 +326,7 @@ class CarLatestDetails extends StatelessWidget {
                 ],
               ),
             ),
-          ),
+
           // Padding(
           //   padding: const EdgeInsets.only(left:12.0,top: 15),
           //   child: Text("Reviews",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),

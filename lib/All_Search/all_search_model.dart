@@ -1,15 +1,15 @@
 // To parse this JSON data, do
 //
-//     final filterPropertySearch = filterPropertySearchFromJson(jsonString);
+//     final allSearch = allSearchFromJson(jsonString);
 
 import 'dart:convert';
 
-FilterPropertySearch filterPropertySearchFromJson(String str) => FilterPropertySearch.fromJson(json.decode(str));
+AllSearch allSearchFromJson(String str) => AllSearch.fromJson(json.decode(str));
 
-String filterPropertySearchToJson(FilterPropertySearch data) => json.encode(data.toJson());
+String allSearchToJson(AllSearch data) => json.encode(data.toJson());
 
-class FilterPropertySearch {
-  FilterPropertySearch({
+class AllSearch {
+  AllSearch({
     this.status,
     this.categories,
     this.listItems,
@@ -19,76 +19,20 @@ class FilterPropertySearch {
   int status;
   List<dynamic> categories;
   List<ListItem> listItems;
-  Map<String, CustomField> customFields;
+  List<dynamic> customFields;
 
-  factory FilterPropertySearch.fromJson(Map<String, dynamic> json) => FilterPropertySearch(
+  factory AllSearch.fromJson(Map<String, dynamic> json) => AllSearch(
     status: json["status"],
     categories: List<dynamic>.from(json["categories"].map((x) => x)),
     listItems: List<ListItem>.from(json["list_items"].map((x) => ListItem.fromJson(x))),
-    customFields: Map.from(json["custom_fields"]).map((k, v) => MapEntry<String, CustomField>(k, CustomField.fromJson(v))),
+    customFields: List<dynamic>.from(json["custom_fields"].map((x) => x)),
   );
 
   Map<String, dynamic> toJson() => {
     "status": status,
     "categories": List<dynamic>.from(categories.map((x) => x)),
     "list_items": List<dynamic>.from(listItems.map((x) => x.toJson())),
-    "custom_fields": Map.from(customFields).map((k, v) => MapEntry<String, dynamic>(k, v.toJson())),
-  };
-}
-
-class CustomField {
-  CustomField({
-    this.fieldId,
-    this.fieldName,
-    this.fieldType,
-    this.filterDisplay,
-    this.valuesList,
-    this.tooltip,
-    this.icon,
-    this.required,
-    this.fieldOrder,
-    this.trFieldName,
-    this.trValuesList,
-  });
-
-  String fieldId;
-  String fieldName;
-  String fieldType;
-  String filterDisplay;
-  String valuesList;
-  String tooltip;
-  String icon;
-  String required;
-  String fieldOrder;
-  String trFieldName;
-  String trValuesList;
-
-  factory CustomField.fromJson(Map<String, dynamic> json) => CustomField(
-    fieldId: json["field_id"],
-    fieldName: json["field_name"],
-    fieldType: json["field_type"],
-    filterDisplay: json["filter_display"],
-    valuesList: json["values_list"],
-    tooltip: json["tooltip"],
-    icon: json["icon"],
-    required: json["required"],
-    fieldOrder: json["field_order"],
-    trFieldName: json["tr_field_name"],
-    trValuesList: json["tr_values_list"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "field_id": fieldId,
-    "field_name": fieldName,
-    "field_type": fieldType,
-    "filter_display": filterDisplay,
-    "values_list": valuesList,
-    "tooltip": tooltip,
-    "icon": icon,
-    "required": required,
-    "field_order": fieldOrder,
-    "tr_field_name": trFieldName,
-    "tr_values_list": trValuesList,
+    "custom_fields": List<dynamic>.from(customFields.map((x) => x)),
   };
 }
 
@@ -132,9 +76,9 @@ class ListItem {
   String catSlug;
   String cityName;
   String citySlug;
-  String countryAbbr;
+  CountryAbbr countryAbbr;
   String countryCall;
-  String countryName;
+  CountryName countryName;
   String isFeat;
   String lat;
   String listingLink;
@@ -147,13 +91,13 @@ class ListItem {
   String price;
   String rating;
   String shortDesc;
-  String stateAbbr;
-  String stateSlug;
-  dynamic tipText;
+  StateAbbr stateAbbr;
+  StateSlug stateSlug;
+  String tipText;
   String mainCatId;
   String mainCatSlug;
   int submissionDate;
-  Map<String, String> customFields;
+  dynamic customFields;
 
   factory ListItem.fromJson(Map<String, dynamic> json) => ListItem(
     listingId: json["listing_id"],
@@ -163,9 +107,9 @@ class ListItem {
     catSlug: json["cat_slug"],
     cityName: json["city_name"],
     citySlug: json["city_slug"],
-    countryAbbr: json["country_abbr"],
+    countryAbbr: countryAbbrValues.map[json["country_abbr"]],
     countryCall: json["country_call"],
-    countryName: json["country_name"],
+    countryName: countryNameValues.map[json["country_name"]],
     isFeat: json["is_feat"],
     lat: json["lat"],
     listingLink: json["listing_link"],
@@ -178,13 +122,13 @@ class ListItem {
     price: json["price"],
     rating: json["rating"],
     shortDesc: json["short_desc"],
-    stateAbbr: json["state_abbr"],
-    stateSlug: json["state_slug"],
-    tipText: json["tip_text"],
+    stateAbbr: stateAbbrValues.map[json["state_abbr"]],
+    stateSlug: stateSlugValues.map[json["state_slug"]],
+    tipText: json["tip_text"] == null ? null : json["tip_text"],
     mainCatId: json["main_cat_id"],
     mainCatSlug: json["main_cat_slug"],
     submissionDate: json["submission_date"],
-    customFields: Map.from(json["custom_fields"]).map((k, v) => MapEntry<String, String>(k, v)),
+    customFields: json["custom_fields"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -195,9 +139,9 @@ class ListItem {
     "cat_slug": catSlug,
     "city_name": cityName,
     "city_slug": citySlug,
-    "country_abbr": countryAbbr,
+    "country_abbr": countryAbbrValues.reverse[countryAbbr],
     "country_call": countryCall,
-    "country_name": countryName,
+    "country_name": countryNameValues.reverse[countryName],
     "is_feat": isFeat,
     "lat": lat,
     "listing_link": listingLink,
@@ -210,12 +154,52 @@ class ListItem {
     "price": price,
     "rating": rating,
     "short_desc": shortDesc,
-    "state_abbr": stateAbbr,
-    "state_slug": stateSlug,
-    "tip_text": tipText,
+    "state_abbr": stateAbbrValues.reverse[stateAbbr],
+    "state_slug": stateSlugValues.reverse[stateSlug],
+    "tip_text": tipText == null ? null : tipText,
     "main_cat_id": mainCatId,
     "main_cat_slug": mainCatSlug,
     "submission_date": submissionDate,
-    "custom_fields": Map.from(customFields).map((k, v) => MapEntry<String, dynamic>(k, v)),
+    "custom_fields": customFields,
   };
+}
+
+enum CountryAbbr { SO }
+
+final countryAbbrValues = EnumValues({
+  "SO": CountryAbbr.SO
+});
+
+enum CountryName { SOMALILAND }
+
+final countryNameValues = EnumValues({
+  "Somaliland": CountryName.SOMALILAND
+});
+
+enum StateAbbr { BERBERA, HARGEISA }
+
+final stateAbbrValues = EnumValues({
+  "Berbera": StateAbbr.BERBERA,
+  "Hargeisa": StateAbbr.HARGEISA
+});
+
+enum StateSlug { BERBERA, HARGEISA }
+
+final stateSlugValues = EnumValues({
+  "berbera": StateSlug.BERBERA,
+  "hargeisa": StateSlug.HARGEISA
+});
+
+class EnumValues<T> {
+  Map<String, T> map;
+  Map<T, String> reverseMap;
+
+  EnumValues(this.map);
+
+  Map<T, String> get reverse {
+    if (reverseMap == null) {
+      reverseMap = map.map((k, v) => new MapEntry(v, k));
+    }
+    return reverseMap;
+  }
 }

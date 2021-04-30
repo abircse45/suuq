@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:suuq_somali/car/car_search_controller.dart';
-import 'package:suuq_somali/controller/search_controller.dart';
+import 'package:suuq_somali/controller/filter_search_controller_property.dart';
+import 'package:suuq_somali/exception/no_data_available.dart';
 import 'package:suuq_somali/utils/app_theme.dart';
 
 class CarSearchScreen extends StatefulWidget {
@@ -313,7 +314,7 @@ class _CarSearchScreenState extends State<CarSearchScreen> {
               );
             },
           ),
-        ) : Center(child: Text("No Data Found",style: TextStyle(fontSize: 25),),);
+        ) : NoDatAvailable();
       }),
     );
   }

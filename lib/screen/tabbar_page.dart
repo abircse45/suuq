@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:suuq_somali/Bottom_search/search_page.dart';
+import 'package:suuq_somali/Chat/chat_page.dart';
 import 'package:suuq_somali/DrawerScreen.dart';
-import 'package:suuq_somali/anything/AnythingPage.dart';
-import 'package:suuq_somali/car/CarPage.dart';
-import 'package:suuq_somali/property/PropertyPage.dart';
-import 'package:suuq_somali/screen/anything_screen_clone.dart';
-import 'package:suuq_somali/screen/chat_page.dart';
-import 'package:suuq_somali/screen/my_profile.dart';
-import 'package:suuq_somali/screen/search_page.dart';
-import 'package:suuq_somali/utils/app_theme.dart';
-import 'package:suuq_somali/widget/category.dart';
+import 'package:suuq_somali/Profile/my_profile.dart';
+import 'package:suuq_somali/create_listing/create_listing_item_tile.dart';
 
-import 'add_item_page.dart';
+import 'category.dart';
+
 
 class TabBarScreen extends StatefulWidget {
   @override
@@ -20,38 +18,28 @@ class TabBarScreen extends StatefulWidget {
 class _TabBarScreenState extends State<TabBarScreen> {
   int _currentIndex = 0;
 
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: _getNavigationButton(),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(top:18.0),
+        padding: const EdgeInsets.only(top: 18.0),
         child: FloatingActionButton(
           backgroundColor: Colors.red,
-          onPressed: () {},
-          child: IconButton(icon: Icon(Icons.add), onPressed: () {}),
+          onPressed: () {
+            Get.to(CreateListingItem());
+          },
+          child: Icon(Icons.add),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      appBar: AppBar(
-        elevation: 1,
-        iconTheme: IconThemeData(color: Colors.black54),
-        backgroundColor: Colors.white,
-        title: Image.asset(
-          "assets/images/suuq_logo.png",
-          height: 90,
-          width: 170,
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-              icon: Icon(
-                Icons.notifications_outlined,
-                size: 30,
-              ),
-              onPressed: () {}),
-        ],
-      ),
       drawer: MenuScreen(),
       body: _screenItem(),
     );
@@ -61,7 +49,6 @@ class _TabBarScreenState extends State<TabBarScreen> {
     return Container(
       height: 60,
       decoration: BoxDecoration(
-
           color: Colors.white,
           border: Border.all(color: Colors.black12, width: 1.0),
           borderRadius: BorderRadius.only(

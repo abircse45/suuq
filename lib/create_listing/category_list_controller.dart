@@ -1,17 +1,15 @@
 import 'package:get/get.dart';
-import 'package:suuq_somali/models/property_model.dart';
-import 'package:suuq_somali/services/property_services.dart';
+import 'package:suuq_somali/create_listing/categories_list_model.dart';
+import 'category_list_services.dart';
 
-class PropertyController extends GetxController {
-  var getProperty = NewProperty().obs;
-  var loading = true.obs;
-  PropertyService service = PropertyService();
+class CategoryListController extends GetxController {
+  var getCategoryListing = CategoryListing().obs;
+  var categoryLoading = true.obs;
+  CategoryListServices categoryListServices = CategoryListServices();
   List<String> propertyList = [];
   List<String> roomList = [];
   List<String> bathRooms = [];
   List<String> carSpace = [];
-
-  String pBeds1;
 
   @override
   void onInit() {
@@ -21,12 +19,11 @@ class PropertyController extends GetxController {
 
   void getDataCalling() async {
     try {
-      loading(true);
-      var result = await service.fetchData();
-      if (result != null) {
-        getProperty.value = result;
-        // select Property ....DropDown........
-        getProperty.value.customFields.forEach((k, v) {
+      categoryLoading(true);
+      var allAdsServices = await categoryListServices.fetchData();
+      if (allAdsServices != null) {
+        getCategoryListing.value = allAdsServices;
+        getCategoryListing.value.customFields.forEach((k, v) {
           print(k);
           print(v.fieldName);
           if (v.fieldName == "Property Type") {
@@ -37,8 +34,8 @@ class PropertyController extends GetxController {
             });
           }
         });
-        // Select RoomList....////
-        getProperty.value.customFields.forEach((k, v) {
+
+        getCategoryListing.value.customFields.forEach((k, v) {
           print(k);
           print(v.fieldName);
           if (v.fieldName == "Rooms") {
@@ -49,9 +46,8 @@ class PropertyController extends GetxController {
             });
           }
         });
-
         //  Selected BathRooms....//////
-        getProperty.value.customFields.forEach((k, v) {
+        getCategoryListing.value.customFields.forEach((k, v) {
           print(k);
           print(v.fieldName);
           if (v.fieldName == "Bathrooms") {
@@ -65,7 +61,7 @@ class PropertyController extends GetxController {
 
         //selectedCarSpace.....////
 
-        getProperty.value.customFields.forEach((k, v) {
+        getCategoryListing.value.customFields.forEach((k, v) {
           print(k);
           print(v.fieldName);
           if (v.fieldName == "Car Space") {
@@ -76,12 +72,9 @@ class PropertyController extends GetxController {
             });
           }
         });
-
-        /// Custom Field..........
-
       }
     } finally {
-      loading(false);
+      categoryLoading(false);
     }
   }
 }

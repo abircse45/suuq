@@ -8,8 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:suuq_somali/models/login_request_model.dart';
 import 'package:suuq_somali/models/login_user.dart';
 import 'package:suuq_somali/property/PropertyPage.dart';
-import 'package:suuq_somali/screen/fogot_password.dart';
-import 'package:suuq_somali/screen/register_screen.dart';
+import 'file:///D:/suuqsomali/lib/Forgot_password/fogot_password.dart';
+import 'file:///D:/suuqsomali/lib/Login/register_screen.dart';
+import 'package:suuq_somali/screen/tabbar_page.dart';
 import 'package:suuq_somali/utils/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -241,8 +242,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
+                        // ignore: deprecated_member_use
                         child: RaisedButton(
-                          color: Colors.lightBlue,
+                          color: HexColor("#dc3545"),
                           onPressed: () {
                             setState(() {
                               if (_key.currentState
@@ -306,12 +308,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                               .BOTTOM,
                                           timeInSecForIosWeb: 2,
                                           backgroundColor:
-                                          HexColor("#6fbe44"),
+                                          HexColor("#dc3545"),
                                           textColor:
                                           Colors.white,
                                           fontSize: 16.0);
 
-                                  Get.to(PropertyPage(),transition: Transition.zoom);
+                                  Get.to(TabBarScreen(),transition: Transition.zoom);
                                       //   Navigator.of(context).pop();
 
 
@@ -324,7 +326,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               .BOTTOM,
                                           timeInSecForIosWeb: 4,
                                           backgroundColor:
-                                          HexColor("#6fbe44"),
+                                          HexColor("#dc3545"),
                                           textColor:
                                           Colors.white,
                                           fontSize: 20.0);
@@ -345,7 +347,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ToastGravity.BOTTOM,
                                         timeInSecForIosWeb: 4,
                                         backgroundColor:
-                                        HexColor("#6fbe44"),
+                                        HexColor("#dc3545"),
                                         textColor: Colors.white,
                                         fontSize: 20.0);
                                   }
@@ -409,7 +411,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Container(
                               child: Text(
                             " Register",
-                            style: TextStyle(fontSize: 17, color: Colors.blue),
+                            style: TextStyle(fontSize: 17, color: HexColor("#dc3545"),),
                           ))),
                     ],
                   ),

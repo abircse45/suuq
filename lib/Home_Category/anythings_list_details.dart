@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
-import 'package:suuq_somali/anything/anythings_list_category_details.dart';
+import 'file:///D:/suuqsomali/lib/Home_Category/anythings_list_category_details.dart';
 import 'package:suuq_somali/controller/all_category_controller.dart';
 import 'package:suuq_somali/exception/no_data_available.dart';
+import 'package:suuq_somali/models/all_ads_model.dart';
 import 'package:suuq_somali/models/anything_model.dart';
 import 'package:suuq_somali/utils/app_theme.dart';
 
 class AnythingCategoryDetails extends StatefulWidget {
   final Cat cat;
+
 
   const AnythingCategoryDetails({Key key, this.cat}) : super(key: key);
 
@@ -54,7 +56,8 @@ class _AnythingCategoryDetailsState extends State<AnythingCategoryDetails> {
           itemBuilder: (context, index) {
             var allCategoryData =
                 allCategory.getallCategory.value.listItems[index];
-            return InkWell(
+            return
+              InkWell(
               onTap: () {
                 Get.to(
                     AnythigListCategoryDetails(

@@ -36,8 +36,6 @@ dependencies:
   page_transition: ^1.1.7+5
   provider: ^5.0.0
   eva_icons_flutter: ^3.0.0
-  flutter_typeahead: ^3.0.0-nullsafety.0
-  faker: ^2.0.0-rc.2
   textfield_search: ^0.8.0
   get: ^4.1.2
   smooth_star_rating: ^1.1.1
@@ -55,10 +53,13 @@ dependencies:
   fluttertoast: ^7.1.6
   shared_preferences: ^2.0.5
   font_awesome_flutter: ^9.0.0
-  jiffy: ^4.1.0
   intl:
   shimmer: ^1.1.2
   flutter_spinkit: "^4.1.2"
+  multi_image_picker: ^4.1.4
+  html_character_entities: ^1.0.0+1
+  image_picker: ^0.7.4
+
 
 
 dev_dependencies:

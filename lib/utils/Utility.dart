@@ -4,6 +4,9 @@ class Utility {
   static const int CAR = 2;
   static const int ANYTHING = 3;
   static const int PROFILE = 4;
+  static const int SEARCH = 5;
+  static const int HOMECAT = 6;
+  static const int TOPCAT = 7;
 
   // static const int PROPERTY_LIST = 1;
   // static const int ANYTHING_LIST = 2;

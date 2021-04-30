@@ -8,12 +8,12 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:suuq_somali/DrawerScreen.dart';
-import 'package:suuq_somali/animation/FadeAnimation.dart';
 import 'package:suuq_somali/controller/property_controller.dart';
-import 'package:suuq_somali/controller/search_controller.dart';
+import 'package:suuq_somali/controller/filter_search_controller_property.dart';
 import 'package:suuq_somali/models/all_ads_model.dart';
 import 'package:suuq_somali/property/property_details.dart';
-import 'package:suuq_somali/screen/search_screen.dart';
+import 'package:suuq_somali/property/property_filter.dart';
+import 'file:///D:/suuqsomali/lib/property/search_screen.dart';
 import 'package:suuq_somali/utils/app_theme.dart';
 
 import 'lastest_listings_details.dart';
@@ -120,7 +120,7 @@ class _ScreenHomePageState extends State<ScreenHomePage> {
           ),
           body: Obx(() {
             if (propertyController.loading.value) {
-              return  Center(
+              return Center(
                 child: SpinKitChasingDots(
                   color: Colors.red,
                   size: 50.0,
@@ -198,9 +198,12 @@ class _ScreenHomePageState extends State<ScreenHomePage> {
 
   bool isVisible = false;
   //List<String> datType = [];
-  String buycat_id = "173";
+  //String buycat_id = "173";
   String propertyRent = "173";
   String propertyBuy = "174";
+  var currentSelectedValueRent = "173";
+  // var currentSelectedValueBuy = "174";
+
   String selectArea;
   String selectProperty;
   String selectedRoom;
@@ -211,6 +214,30 @@ class _ScreenHomePageState extends State<ScreenHomePage> {
   bool isChange;
 
   GlobalKey<AutoCompleteTextFieldState<StateValue>> key = new GlobalKey();
+  ScrollController _scrollController = ScrollController();
+
+  fetchData() {
+    for (int i = 0; i < 5; i++) {
+      propertyController.getDataCalling();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        fetchData();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -231,746 +258,146 @@ class _ScreenHomePageState extends State<ScreenHomePage> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          // height: 470,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage('assets/images/hero.jpeg'),
-                fit: BoxFit.cover),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 28.0, bottom: 30),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 30.0, bottom: 5),
-                  child: Wrap(
-                    children: [
-                      RaisedButton(
 
-                        color:  Colors.black,
-                        onPressed: () {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                        },
-                        child: Text("Rent",style: TextStyle(fontSize: 16,color: Colors.white),),
-                      ),
+        // Padding(
+        //   padding: const EdgeInsets.only(top: 12.0, left: 14),
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     crossAxisAlignment: CrossAxisAlignment.center,
+        //     children: [
+        //       Text(
+        //         "Featured Listing",
+        //         style: TextStyle(
+        //             fontSize: 20,
+        //             color: Colors.black,
+        //             fontWeight: FontWeight.bold),
+        //       ),
+        //     ],
+        //   ),
+        // ),
+        // Divider(
+        //   thickness: 2,
+        //   color: Colors.grey,
+        //   indent: 12,
+        //   endIndent: 5,
+        // ),
+      //   Feature Listing....................
 
-             
-                      SizedBox(
-                        width: 10,
-                      ),
-                      RaisedButton(
-                        color:  Colors.red ,
-                        onPressed: () {
 
-                        },
-                        child: Text("Buy",style: TextStyle(fontSize: 16,color: Colors.white),),
-
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20.0, right: 20),
-                  child: Container(
-                    // height: 360,
-                    // width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: Colors.black,
-                    ),
-                    child: Column(
-                      children: [
-                        Obx(() {
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                                left: 23.0, right: 23.0, top: 18),
-                            child: Container(
-                              height: 70,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  color: Colors.white),
-                              child: SearchableDropdown(
-                                hint: Padding(
-                                  padding: const EdgeInsets.all(13.0),
-                                  child: Text("Select City"),
-                                ),
-                                iconSize: 20,
-                                displayClearIcon: true,
-                                underline: Container(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.white)),
-                                ),
-                                items: propertyController
-                                    .getProperty.value.states.values
-                                    .map((e) {
-                                  return DropdownMenuItem(
-                                    child: Text(e.stateName),
-                                    value: e.stateName,
-                                  );
-                                }).toList(),
-                                value: selectedCity,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedCity = value;
-                                  });
-                                },
-                                isExpanded: true,
-                              ),
-                            ),
-                          );
-                        }),
-
-                        ///Pending......
-
-                        Obx(
-                          () {
-                            if (propertyController.loading.value) {
-                              return Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 10.0, left: 25, right: 25),
-                              child: Container(
-                                height: 70,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton(
-                                    underline: Container(
-                                      height: 1,
-                                      color: Colors.transparent,
-                                    ),
-                                    iconSize: 30,
-                                    isExpanded: true,
-                                    style: TextStyle(color: Colors.black),
-                                    hint: Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 10.0),
-                                      child: Text(
-                                        " Select Area",
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                    ),
-                                    items: propertyController
-                                        .getProperty.value.cities.values
-                                        .map((e) {
-                                      return DropdownMenuItem(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 0.0),
-                                          child: Container(
-                                            child: ListTile(
-                                              title: Text(e.cityName),
-                                            ),
-                                          ),
-                                        ),
-                                        value: e.cityName,
-                                      );
-                                    }).toList(),
-                                    value: selectArea,
-                                    onChanged: (text) {
-                                      setState(() {
-                                        selectArea = text;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-
-                        //  Area ////////
-
-                        Obx(
-                          () {
-                            if (propertyController.loading.value) {
-                              return  Center(
-                                child: SpinKitChasingDots(
-                                  color: Colors.red,
-                                  size: 50.0,
-                                ),
-                              );
-                            }
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 10.0, left: 25, right: 25),
-                              child: Container(
-                                height: 70,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton(
-                                    iconSize: 35,
-                                    isExpanded: true,
-                                    style: TextStyle(color: Colors.black),
-                                    hint: Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 10.0),
-                                      child: Text(
-                                        " Select Property Type",
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                    ),
-                                    items: propertyController.propertyList
-                                        .map((element) {
-                                      return DropdownMenuItem(
-                                        value: element,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 17.0),
-                                          child: Text(
-                                            element,
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          ),
-                                        ),
-                                      );
-                                    }).toList(),
-                                    value: selectProperty,
-                                    onChanged: (text) {
-                                      setState(() {
-                                        selectProperty = text;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-
-                        Padding(
-                          padding: const EdgeInsets.only(left: 28.0, right: 28),
-                          child: Container(
-                            height: 50,
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                searchController.getSaerchDataCalling(
-                                  buycat_id,
-                                  selectedCity,
-                                  selectArea,
-                                  selectProperty,
-                                  selectedCarSpace,
-                                  selectBathRooms,
-                                  selectedRoom,
-                                );
-                                // searchController.searchService.fetchSearchData(
-                                //   buycat_id,
-                                //   selectedCity,
-                                //   selectArea,
-                                //   selectProperty,
-                                //   selectedCarSpace,
-                                //   selectBathRooms,
-                                //   selectedRoom,
-                                //
-                                //
-                                //
-                                // );
-                                Get.to(SearchScreen(),
-                                    transition: Transition.zoom);
-                              },
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.red),
-                              ),
-                              child: Text(
-                                "Search",
-                                style: TextStyle(fontSize: 20),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                setState(() {
-                                  isVisible = !isVisible;
-                                });
-                              },
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 30.0),
-                                    child: Text(
-                                      "Advance Search",
-                                      style: TextStyle(
-                                          fontSize: 15, color: Colors.white),
-                                    ),
-                                  ),
-                                  Icon(
-                                    isVisible
-                                        ? Icons.keyboard_arrow_down_rounded
-                                        : Icons.keyboard_arrow_up_outlined,
-                                    color: Colors.white,
-                                  ),
-                                  // Spacer(),
-                                  // Padding(
-                                  //   padding: const EdgeInsets.only(right: 30.0),
-                                  //   child: Text(
-                                  //     "Reset Search",
-                                  //     style: TextStyle(
-                                  //         fontSize: 14, color: Colors.white),
-                                  //   ),
-                                  // ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              width: 30,
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                // setState(() {
-                                //   // selectArea = '';
-                                //   // selectProperty = '';
-                                //   // selectBathRooms = '';
-                                //   // selectedCarSpace = '';
-                                //   // selectedRoom = '';
-                                //   // selectedValue = '';
-                                // });
-                              },
-                              child: Text(
-                                "Reset Search",
-                                style: TextStyle(
-                                    fontSize: 15, color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Visibility(
-                          visible: isVisible,
-                          child: Column(
-                            children: [
-                              //Rooms......Advance Search......
-                              Obx(
-                                () {
-                                  if (propertyController.loading.value) {
-                                    return  Center(
-                                      child: SpinKitChasingDots(
-                                        color: Colors.red,
-                                        size: 50.0,
-                                      ),
-                                    );
-                                  }
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 10.0, left: 25, right: 25),
-                                    child: Container(
-                                      height: 70,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                      ),
-                                      child: DropdownButtonHideUnderline(
-                                        child: DropdownButton(
-                                          isExpanded: true,
-                                          style: TextStyle(color: Colors.black),
-                                          hint: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 12.0),
-                                            child: Text(
-                                              "Rooms",
-                                              style: TextStyle(
-                                                  color: Colors.black),
-                                            ),
-                                          ),
-                                          items: propertyController.roomList
-                                              .map((element) {
-                                            return DropdownMenuItem(
-                                              value: element,
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 13.0),
-                                                child: Text(
-                                                  element,
-                                                  style: TextStyle(
-                                                      color: Colors.black),
-                                                ),
-                                              ),
-                                            );
-                                          }).toList(),
-                                          value: selectedRoom,
-                                          onChanged: (text) {
-                                            setState(() {
-                                              selectedRoom = text;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              Obx(
-                                () {
-                                  if (propertyController.loading.value) {
-                                    return  Center(
-                                      child: SpinKitChasingDots(
-                                        color: Colors.red,
-                                        size: 50.0,
-                                      ),
-                                    );
-                                  }
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 10.0, left: 25, right: 25),
-                                    child: Container(
-                                      height: 70,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                      ),
-                                      child: DropdownButtonHideUnderline(
-                                        child: DropdownButton(
-                                          isExpanded: true,
-                                          style: TextStyle(color: Colors.black),
-                                          hint: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 12.0),
-                                            child: Text(
-                                              "BathRooms",
-                                              style: TextStyle(
-                                                  color: Colors.black),
-                                            ),
-                                          ),
-                                          items: propertyController.bathRooms
-                                              .map((element) {
-                                            return DropdownMenuItem(
-                                              value: element,
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 13.0),
-                                                child: Text(
-                                                  element,
-                                                  style: TextStyle(
-                                                      color: Colors.black),
-                                                ),
-                                              ),
-                                            );
-                                          }).toList(),
-                                          value: selectBathRooms,
-                                          onChanged: (text) {
-                                            setState(() {
-                                              selectBathRooms = text;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              Obx(
-                                () {
-                                  if (propertyController.loading.value) {
-                                    return Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  }
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 10.0, left: 25, right: 25),
-                                    child: Container(
-                                      height: 70,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                      ),
-                                      child: DropdownButtonHideUnderline(
-                                        child: DropdownButton(
-                                          isExpanded: true,
-                                          style: TextStyle(color: Colors.black),
-                                          hint: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 12.0),
-                                            child: Text(
-                                              "Car Space",
-                                              style: TextStyle(
-                                                  color: Colors.black),
-                                            ),
-                                          ),
-                                          items: propertyController.carSpace
-                                              .map((element) {
-                                            return DropdownMenuItem(
-                                              value: element,
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 13.0),
-                                                child: Text(
-                                                  element,
-                                                  style: TextStyle(
-                                                      color: Colors.black),
-                                                ),
-                                              ),
-                                            );
-                                          }).toList(),
-                                          value: selectedCarSpace,
-                                          onChanged: (text) {
-                                            setState(() {
-                                              selectedCarSpace = text;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 23.0, top: 10),
-                                          child: Container(
-                                            height: 70,
-                                            width: double.infinity,
-                                            child: TextFormField(
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              decoration: InputDecoration(
-                                                contentPadding:
-                                                    EdgeInsets.only(left: 59),
-                                                filled: true,
-                                                focusColor: Colors.white,
-                                                fillColor: Colors.white,
-                                                border: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                    color: Colors.white,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(5),
-                                                ),
-                                                hintText: "0",
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 21, top: 10),
-                                      child: Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 18.0),
-                                            child: Container(
-                                              height: 70,
-                                              width: double.infinity,
-                                              child: TextFormField(
-                                                // controller: passportTourController,
-                                                // //     controller: _controllers3[index],
-                                                //
-
-                                                decoration: InputDecoration(
-                                                  contentPadding:
-                                                      EdgeInsets.only(left: 49),
-                                                  filled: true,
-                                                  focusColor: Colors.white,
-                                                  fillColor: Colors.white,
-                                                  border: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                      color: Colors.white,
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5),
-                                                  ),
-                                                  hintText: "100",
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Padding(
-          padding: const EdgeInsets.only(top: 12.0, left: 14),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left:8.0),
+              child: Text(
                 "Featured Listing",
                 style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     color: Colors.black,
                     fontWeight: FontWeight.bold),
               ),
-            ],
-          ),
+            ),
+         IconButton(
+                icon: Icon(Icons.filter_list_outlined),
+                onPressed: () {
+                  Get.to(PropertyFilter(),transition: Transition.zoom);
+                },
+
+            ),
+          ],
         ),
-        Divider(
-          thickness: 2,
-          color: Colors.grey,
-          indent: 12,
-          endIndent: 5,
-        ),
-        //  Feature Listing....................
+
         Obx(() {
           if (propertyController.loading.value) {
             return Center(
               child: CircularProgressIndicator(),
             );
           }
-          return Container(
-            height: 335,
-            //  width: 260,
-            child: ListView.builder(
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              itemCount: propertyController.getProperty.value.featured.length,
-              itemBuilder: (_, index) {
-                var data = propertyController.getProperty.value.featured[index];
-                return Padding(
-                  padding: const EdgeInsets.only(left: 7.0, top: 5),
-                  child: Card(
-                    color: Colors.white,
-                    elevation: 2,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: InkWell(
-                        onTap: () {
-                          Get.to(
-                              PropertyDetails(
-                                image: data.photoUrl,
-                                title: data.listingTitle,
-                                price: data.price,
-                                description: data.shortDesc,
-                                listingAddress: data.listingAddr,
-                                catNamePropertyForBuy: "${data.catName}",
-                                propertyType: data.customFields['32'],
-                                bathrooms: data.customFields['34'],
-                                buildYear: data.customFields['39'],
-                                enterHouseSize: data.customFields['38'],
-                                rooms: data.customFields['33'],
-                                carSpace: data.customFields['37'],
+          return ListView.builder(
+            controller: _scrollController,
+            shrinkWrap: true,
+            itemCount: propertyController.getProperty.value.featured.length,
+            itemBuilder: (_, index) {
+              var data = propertyController.getProperty.value.featured[index];
+              return InkWell(
+                onTap: (){
+                  Get.to(
+                      PropertyDetails(
+                        image: data.photoUrl,
+                        title: data.listingTitle,
+                        price: data.price,
+                        description: data.shortDesc,
+                        listingAddress: data.listingAddr,
+                        catNamePropertyForBuy: "${data.catName}",
+                        propertyType: data.customFields['32'],
+                        bathrooms: data.customFields['34'],
+                        buildYear: data.customFields['39'],
+                        enterHouseSize: data.customFields['38'],
+                        rooms: data.customFields['33'],
+                        carSpace: data.customFields['37'],
+                      ),
+                      transition: Transition.zoom);
+                },
+                child: Card(
+                  elevation: 0,
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(3.0)),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 28.0),
+                              child: Image.network(
+                                data.photoUrl,
+                                cacheHeight: 85,
                               ),
-                              transition: Transition.zoom);
-                        },
-                        child: Container(
-                          height: 360,
-                          width: 260,
+                            )),
+                        Expanded(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Stack(
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Image.network(
-                                    data.photoUrl,
-                                    height: 138,
-                                    width: 300,
-                                    fit: BoxFit.cover,
-                                  ),
                                   Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 98.0,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 0.0, right: 30),
-                                          child: Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.red,
-                                                borderRadius:
-                                                    BorderRadius.circular(0),
-                                              ),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(6.0),
-                                                child: Text(
-                                                  "\$${data.price}",
-                                                  style: TextStyle(
-                                                      fontSize: 18,
-                                                      color: Colors.white),
-                                                ),
-                                              )),
-                                        ),
-                                        Spacer(),
-                                        IconButton(
-                                            icon: Icon(
-                                              Icons.favorite_border,
-                                              color: Colors.white,
-                                            ),
-                                            onPressed: () {}),
-                                      ],
-                                    ),
-                                  )
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text("\$${data.price}",
+                                        style: TextStyle(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
+                                  Icon(Icons.favorite_border)
                                 ],
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
+                                padding: const EdgeInsets.only(left: 8.0, top: 5),
                                 child: Text(
-                                  data.listingTitle,
+                                  "\$${data.listingTitle}",
                                   style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold),
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ),
                               SizedBox(
-                                height: 4,
+                                height: 5,
                               ),
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Column(
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
                                           crossAxisAlignment:
@@ -981,9 +408,9 @@ class _ScreenHomePageState extends State<ScreenHomePage> {
                                                   left: 4.0),
                                               child: Row(
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment.center,
+                                                    MainAxisAlignment.start,
                                                 crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   Icon(
                                                     Icons.person,
@@ -1011,8 +438,7 @@ class _ScreenHomePageState extends State<ScreenHomePage> {
                                                   ),
                                                   Padding(
                                                     padding:
-                                                        const EdgeInsets.all(
-                                                            4.0),
+                                                        const EdgeInsets.all(4.0),
                                                     child: Text(
                                                         "Beds:${data.customFields['33']}"),
                                                   ),
@@ -1031,22 +457,25 @@ class _ScreenHomePageState extends State<ScreenHomePage> {
                                                     Icons.keyboard,
                                                     color: Colors.red,
                                                   ),
-                                                  Text(
-                                                      "Type:${data.customFields['32']}"),
+                                                  Expanded(
+                                                    child: Text(
+                                                        "Type:${data.customFields['32']}"),
+                                                  )
                                                 ],
                                               ),
                                             ),
                                           ],
                                         ),
-                                        Spacer(),
-                                        Padding(
+                                      ),
+                                      Expanded(
+                                        child: Padding(
                                           padding:
                                               const EdgeInsets.only(right: 4.0),
                                           child: Column(
-                                            // mainAxisAlignment:
-                                            //     MainAxisAlignment.start,
-                                            // crossAxisAlignment:
-                                            //     CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Row(
                                                 // mainAxisAlignment:
@@ -1088,444 +517,714 @@ class _ScreenHomePageState extends State<ScreenHomePage> {
                                               ),
                                               Padding(
                                                 padding: const EdgeInsets.only(
-                                                    left: 2.0, right: 3),
+                                                    left: 25.0, right: 0),
                                                 child: Row(
                                                   children: [
                                                     Icon(
                                                       Icons.border_style,
                                                       color: Colors.red,
                                                     ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 4.0),
-                                                      child: Text(
-                                                          "sq.ft${data.customFields['38'] ?? ""}"),
-                                                    ),
+                                                    Expanded(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets.only(
+                                                                left: 4.0),
+                                                        child: Text(
+                                                            "sq.ft${data.customFields['38'] ?? ""}"),
+                                                      ),
+                                                    )
                                                   ],
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 2,
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              ///  property  Call
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 6.0),
-                                    child: Text(
-                                      "Property for Buy",
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.red[600],
-                                          fontWeight: FontWeight.bold),
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                  Spacer(),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 25.0, right: 5.0),
-                                    child: new ElevatedButton(
-                                      onPressed: () {},
-                                      style: ButtonStyle(
-                                          backgroundColor:
-                                              MaterialStateProperty.all<Color>(
-                                                  Colors.black)),
-                                      child: Text("    Call    "),
-                                    ),
+                                  SizedBox(
+                                    height: 2,
                                   ),
                                 ],
                               ),
                             ],
                           ),
-                        ),
-                      ),
+                        )
+                      ],
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           );
+          // return Container(
+          //   height: 335,
+          //   //  width: 260,
+          //   child:
+          //   ListView.builder(
+          //     shrinkWrap: true,
+          //     scrollDirection: Axis.horizontal,
+          //     itemCount: propertyController.getProperty.value.featured.length,
+          //     itemBuilder: (_, index) {
+          //       var data = propertyController.getProperty.value.featured[index];
+          //       return Padding(
+          //         padding: const EdgeInsets.only(left: 7.0, top: 5),
+          //         child: Card(
+          //           color: Colors.white,
+          //           elevation: 2,
+          //           child: ClipRRect(
+          //             borderRadius: BorderRadius.circular(5),
+          //             child: InkWell(
+          //               onTap: () {
+          //                 Get.to(
+          //                     PropertyDetails(
+          //                       image: data.photoUrl,
+          //                       title: data.listingTitle,
+          //                       price: data.price,
+          //                       description: data.shortDesc,
+          //                       listingAddress: data.listingAddr,
+          //                       catNamePropertyForBuy: "${data.catName}",
+          //                       propertyType: data.customFields['32'],
+          //                       bathrooms: data.customFields['34'],
+          //                       buildYear: data.customFields['39'],
+          //                       enterHouseSize: data.customFields['38'],
+          //                       rooms: data.customFields['33'],
+          //                       carSpace: data.customFields['37'],
+          //                     ),
+          //                     transition: Transition.zoom);
+          //               },
+          //               child: Container(
+          //                 height: 360,
+          //                 width: 260,
+          //                 child: Column(
+          //                   mainAxisAlignment: MainAxisAlignment.start,
+          //                   crossAxisAlignment: CrossAxisAlignment.start,
+          //                   children: [
+          //                     Stack(
+          //                       children: [
+          //                         Image.network(
+          //                           data.photoUrl,
+          //                           height: 138,
+          //                           width: 300,
+          //                           fit: BoxFit.cover,
+          //                         ),
+          //                         Padding(
+          //                           padding: const EdgeInsets.only(
+          //                             top: 98.0,
+          //                           ),
+          //                           child: Row(
+          //                             children: [
+          //                               Padding(
+          //                                 padding: const EdgeInsets.only(
+          //                                     left: 0.0, right: 30),
+          //                                 child: Container(
+          //                                     decoration: BoxDecoration(
+          //                                       color: Colors.red,
+          //                                       borderRadius:
+          //                                           BorderRadius.circular(0),
+          //                                     ),
+          //                                     child: Padding(
+          //                                       padding:
+          //                                           const EdgeInsets.all(6.0),
+          //                                       child: Text(
+          //                                         "\$${data.price}",
+          //                                         style: TextStyle(
+          //                                             fontSize: 18,
+          //                                             color: Colors.white),
+          //                                       ),
+          //                                     )),
+          //                               ),
+          //                               Spacer(),
+          //                               IconButton(
+          //                                   icon: Icon(
+          //                                     Icons.favorite_border,
+          //                                     color: Colors.white,
+          //                                   ),
+          //                                   onPressed: () {}),
+          //                             ],
+          //                           ),
+          //                         )
+          //                       ],
+          //                     ),
+          //                     Padding(
+          //                       padding: const EdgeInsets.only(left: 8.0),
+          //                       child: Text(
+          //                         data.listingTitle,
+          //                         style: TextStyle(
+          //                             fontSize: 17,
+          //                             fontWeight: FontWeight.bold),
+          //                       ),
+          //                     ),
+          //                     SizedBox(
+          //                       height: 4,
+          //                     ),
+          //                     Expanded(
+          //                       child: Column(
+          //                         mainAxisAlignment: MainAxisAlignment.center,
+          //                         crossAxisAlignment: CrossAxisAlignment.center,
+          //                         children: [
+          //                           Row(
+          //                             mainAxisAlignment:
+          //                                 MainAxisAlignment.center,
+          //                             crossAxisAlignment:
+          //                                 CrossAxisAlignment.center,
+          //                             children: [
+          //                               Column(
+          //                                 mainAxisAlignment:
+          //                                     MainAxisAlignment.start,
+          //                                 crossAxisAlignment:
+          //                                     CrossAxisAlignment.start,
+          //                                 children: [
+          //                                   Padding(
+          //                                     padding: const EdgeInsets.only(
+          //                                         left: 4.0),
+          //                                     child: Row(
+          //                                       mainAxisAlignment:
+          //                                           MainAxisAlignment.center,
+          //                                       crossAxisAlignment:
+          //                                           CrossAxisAlignment.center,
+          //                                       children: [
+          //                                         Icon(
+          //                                           Icons.person,
+          //                                           color: Colors.red,
+          //                                         ),
+          //                                         Text("1 month ago"),
+          //                                       ],
+          //                                     ),
+          //                                   ),
+          //                                   SizedBox(
+          //                                     height: 4,
+          //                                   ),
+          //                                   Padding(
+          //                                     padding: const EdgeInsets.only(
+          //                                         left: 4.0),
+          //                                     child: Row(
+          //                                       mainAxisAlignment:
+          //                                           MainAxisAlignment.start,
+          //                                       crossAxisAlignment:
+          //                                           CrossAxisAlignment.start,
+          //                                       children: [
+          //                                         Icon(
+          //                                           Icons.tour,
+          //                                           color: Colors.red,
+          //                                         ),
+          //                                         Padding(
+          //                                           padding:
+          //                                               const EdgeInsets.all(
+          //                                                   4.0),
+          //                                           child: Text(
+          //                                               "Beds:${data.customFields['33']}"),
+          //                                         ),
+          //                                       ],
+          //                                     ),
+          //                                   ),
+          //                                   SizedBox(
+          //                                     height: 3,
+          //                                   ),
+          //                                   Padding(
+          //                                     padding: const EdgeInsets.only(
+          //                                         left: 4.0),
+          //                                     child: Row(
+          //                                       children: [
+          //                                         Icon(
+          //                                           Icons.keyboard,
+          //                                           color: Colors.red,
+          //                                         ),
+          //                                         Text(
+          //                                             "Type:${data.customFields['32']}"),
+          //                                       ],
+          //                                     ),
+          //                                   ),
+          //                                 ],
+          //                               ),
+          //                               Spacer(),
+          //                               Padding(
+          //                                 padding:
+          //                                     const EdgeInsets.only(right: 4.0),
+          //                                 child: Column(
+          //                                   // mainAxisAlignment:
+          //                                   //     MainAxisAlignment.start,
+          //                                   // crossAxisAlignment:
+          //                                   //     CrossAxisAlignment.start,
+          //                                   children: [
+          //                                     Row(
+          //                                       // mainAxisAlignment:
+          //                                       //     MainAxisAlignment.start,
+          //                                       // crossAxisAlignment:
+          //                                       //     CrossAxisAlignment.start,
+          //                                       children: [
+          //                                         Icon(
+          //                                           Icons.location_on_outlined,
+          //                                           color: Colors.red,
+          //                                         ),
+          //                                         Text(data.stateAbbr),
+          //                                       ],
+          //                                     ),
+          //                                     SizedBox(
+          //                                       height: 4,
+          //                                     ),
+          //                                     Padding(
+          //                                       padding: const EdgeInsets.only(
+          //                                           left: 20.0, right: 5),
+          //                                       child: Row(
+          //                                         children: [
+          //                                           Padding(
+          //                                             padding:
+          //                                                 const EdgeInsets.only(
+          //                                                     right: 3.0),
+          //                                             child: Icon(
+          //                                               Icons.adb_sharp,
+          //                                               color: Colors.red,
+          //                                             ),
+          //                                           ),
+          //                                           Text(
+          //                                               "Bath:${data.customFields['34']}"),
+          //                                         ],
+          //                                       ),
+          //                                     ),
+          //                                     SizedBox(
+          //                                       height: 4,
+          //                                     ),
+          //                                     Padding(
+          //                                       padding: const EdgeInsets.only(
+          //                                           left: 2.0, right: 3),
+          //                                       child: Row(
+          //                                         children: [
+          //                                           Icon(
+          //                                             Icons.border_style,
+          //                                             color: Colors.red,
+          //                                           ),
+          //                                           Padding(
+          //                                             padding:
+          //                                                 const EdgeInsets.only(
+          //                                                     left: 4.0),
+          //                                             child: Text(
+          //                                                 "sq.ft${data.customFields['38'] ?? ""}"),
+          //                                           ),
+          //                                         ],
+          //                                       ),
+          //                                     ),
+          //                                   ],
+          //                                 ),
+          //                               ),
+          //                             ],
+          //                           ),
+          //                           SizedBox(
+          //                             height: 2,
+          //                           ),
+          //                         ],
+          //                       ),
+          //                     ),
+          //
+          //                     ///  property  Call
+          //                     Row(
+          //                       children: [
+          //                         Padding(
+          //                           padding: const EdgeInsets.only(left: 6.0),
+          //                           child: Text(
+          //                             "Property for Buy",
+          //                             style: TextStyle(
+          //                                 fontSize: 16,
+          //                                 color: Colors.red[600],
+          //                                 fontWeight: FontWeight.bold),
+          //                           ),
+          //                         ),
+          //                         Spacer(),
+          //                         Padding(
+          //                           padding: const EdgeInsets.only(
+          //                               left: 25.0, right: 5.0),
+          //                           child: new ElevatedButton(
+          //                             onPressed: () {},
+          //                             style: ButtonStyle(
+          //                                 backgroundColor:
+          //                                     MaterialStateProperty.all<Color>(
+          //                                         Colors.black)),
+          //                             child: Text("    Call    "),
+          //                           ),
+          //                         ),
+          //                       ],
+          //                     ),
+          //                   ],
+          //                 ),
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //   ),
+          // );
         }),
         SizedBox(
           height: 20,
         ),
         // Explore The Latest Listings...
-        Padding(
-          padding: const EdgeInsets.only(top: 12.0, left: 14),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Explore The Latest Listing",
-                style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        ),
-        Divider(
-          thickness: 2,
-          color: Colors.grey,
-          indent: 12,
-          endIndent: 5,
-        ),
-        Obx(() {
-          if (propertyController.loading.value) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          return Container(
-            height: 332,
-            //  width: 260,
-            child: ListView.builder(
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              itemCount: propertyController.getProperty.value.latest.length,
-              itemBuilder: (_, index) {
-                var latestData =
-                    propertyController.getProperty.value.latest[index];
-                return Padding(
-                  padding: const EdgeInsets.only(left: 7.0, top: 5),
-                  child: Card(
-                    color: Colors.white,
-                    elevation: 2,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: InkWell(
-                        onTap: () {
-                          Get.to(
-                              DetailsLatestListing(
-                                image: latestData.photoUrl,
-                                title: latestData.listingTitle,
-                                price: latestData.listingPrice,
-                                description: latestData.shortDesc,
-                                listingAddress: latestData.listingAddr,
-                                catNamePropertyForBuy:
-                                    latestData.catName.toString(),
-                                propertyType: latestData.customFields['32'],
-                                bathrooms: latestData.customFields['34'],
-                                buildYear: latestData.customFields['39'],
-                                enterHouseSize: latestData.customFields['38'],
-                                rooms: latestData.customFields['33'],
-                                carSpace: latestData.customFields['37'],
-                              ),
-                              transition: Transition.zoom);
-
-                          //   Get.to(PropertyDetails(), transition: Transition.zoom);
-                        },
-                        child: Container(
-                          height: 362,
-                          width: 250,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Stack(
-                                children: [
-                                  Image.network(
-                                    latestData.photoUrl,
-                                    height: 138,
-                                    width: 300,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 98.0),
-                                    child: Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 0.0, right: 30),
-                                          child: Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.red,
-                                                borderRadius:
-                                                    BorderRadius.circular(0),
-                                              ),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(6.0),
-                                                child: Text(
-                                                  "\$ ${latestData.listingPrice}",
-                                                  style: TextStyle(
-                                                      fontSize: 18,
-                                                      color: Colors.white),
-                                                ),
-                                              )),
-                                        ),
-                                        Spacer(),
-                                        IconButton(
-                                            icon: Icon(
-                                              Icons.favorite_border,
-                                              color: Colors.white,
-                                            ),
-                                            onPressed: () {}),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: Text(
-                                  "${latestData.listingTitle}",
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 4.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Icon(
-                                                    Icons.person,
-                                                    color: Colors.red,
-                                                  ),
-                                                  Text("1 month ago"),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 4,
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 4.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Icon(
-                                                    Icons.tour,
-                                                    color: Colors.red,
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            4.0),
-                                                    child: Text(
-                                                        "Beds:${latestData.customFields['33']}"),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 3,
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 4.0),
-                                              child: Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.keyboard,
-                                                    color: Colors.red,
-                                                  ),
-                                                  Text(
-                                                      "Type:${latestData.customFields['32']}"),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Spacer(),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 4.0),
-                                          child: Column(
-                                            // mainAxisAlignment:
-                                            //     MainAxisAlignment.start,
-                                            // crossAxisAlignment:
-                                            //     CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                // mainAxisAlignment:
-                                                //     MainAxisAlignment.start,
-                                                // crossAxisAlignment:
-                                                //     CrossAxisAlignment.start,
-                                                children: [
-                                                  Icon(
-                                                    Icons.location_on_outlined,
-                                                    color: Colors.red,
-                                                  ),
-                                                  Text(latestData.stateAbbr),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                height: 4,
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 20.0, right: 5),
-                                                child: Row(
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              right: 3.0),
-                                                      child: Icon(
-                                                        Icons.adb_sharp,
-                                                        color: Colors.red,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                        "Bath:${latestData.customFields['34']}"),
-                                                  ],
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: 4,
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 2.0, right: 3),
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.border_style,
-                                                      color: Colors.red,
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 4.0),
-                                                      child: Text(
-                                                          "sq.ft${latestData.customFields['38']}"),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 2,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 4.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          color: Colors.red),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Container(
-                                          child: Text(
-                                            "Property for Buy",
-                                            style: TextStyle(
-                                                fontSize: 17,
-                                                color: Colors.white),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Spacer(),
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 4.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.black,
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                      child: InkWell(
-                                        onTap: () {},
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              right: 6.0, top: 6, bottom: 2),
-                                          child: Row(
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 8.0),
-                                                child: Container(
-                                                  padding: EdgeInsets.only(
-                                                      right: 15),
-                                                  child: Icon(
-                                                    Icons
-                                                        .phone_enabled_outlined,
-                                                    size: 30,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                              Text(
-                                                "    Call",
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Colors.white),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 3,
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          );
-        }),
+        // Padding(
+        //   padding: const EdgeInsets.only(top: 12.0, left: 14),
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.start,
+        //     crossAxisAlignment: CrossAxisAlignment.start,
+        //     children: [
+        //       Text(
+        //         "Explore The Latest Listing",
+        //         style: TextStyle(
+        //             fontSize: 20,
+        //             color: Colors.black,
+        //             fontWeight: FontWeight.bold),
+        //       ),
+        //     ],
+        //   ),
+        // ),
+        // Divider(
+        //   thickness: 2,
+        //   color: Colors.grey,
+        //   indent: 12,
+        //   endIndent: 5,
+        // ),
+        // Obx(() {
+        //   if (propertyController.loading.value) {
+        //     return Center(
+        //       child: CircularProgressIndicator(),
+        //     );
+        //   }
+        //   return Container(
+        //     height: 332,
+        //     //  width: 260,
+        //     child: ListView.builder(
+        //       shrinkWrap: true,
+        //       scrollDirection: Axis.horizontal,
+        //       itemCount: propertyController.getProperty.value.latest.length,
+        //       itemBuilder: (_, index) {
+        //         var latestData =
+        //             propertyController.getProperty.value.latest[index];
+        //         return Padding(
+        //           padding: const EdgeInsets.only(left: 7.0, top: 5),
+        //           child: Card(
+        //             color: Colors.white,
+        //             elevation: 2,
+        //             child: ClipRRect(
+        //               borderRadius: BorderRadius.circular(5),
+        //               child: InkWell(
+        //                 onTap: () {
+        //                   Get.to(
+        //                       DetailsLatestListing(
+        //                         image: latestData.photoUrl,
+        //                         title: latestData.listingTitle,
+        //                         price: latestData.listingPrice,
+        //                         description: latestData.shortDesc,
+        //                         listingAddress: latestData.listingAddr,
+        //                         catNamePropertyForBuy:
+        //                             latestData.catName.toString(),
+        //                         propertyType: latestData.customFields['32'],
+        //                         bathrooms: latestData.customFields['34'],
+        //                         buildYear: latestData.customFields['39'],
+        //                         enterHouseSize: latestData.customFields['38'],
+        //                         rooms: latestData.customFields['33'],
+        //                         carSpace: latestData.customFields['37'],
+        //                       ),
+        //                       transition: Transition.zoom);
+        //
+        //                   //   Get.to(PropertyDetails(), transition: Transition.zoom);
+        //                 },
+        //                 child: Container(
+        //                   height: 362,
+        //                   width: 250,
+        //                   child: Column(
+        //                     mainAxisAlignment: MainAxisAlignment.start,
+        //                     crossAxisAlignment: CrossAxisAlignment.start,
+        //                     children: [
+        //                       Stack(
+        //                         children: [
+        //                           Image.network(
+        //                             latestData.photoUrl,
+        //                             height: 138,
+        //                             width: 300,
+        //                             fit: BoxFit.cover,
+        //                           ),
+        //                           Padding(
+        //                             padding: const EdgeInsets.only(top: 98.0),
+        //                             child: Row(
+        //                               children: [
+        //                                 Padding(
+        //                                   padding: const EdgeInsets.only(
+        //                                       left: 0.0, right: 30),
+        //                                   child: Container(
+        //                                       decoration: BoxDecoration(
+        //                                         color: Colors.red,
+        //                                         borderRadius:
+        //                                             BorderRadius.circular(0),
+        //                                       ),
+        //                                       child: Padding(
+        //                                         padding:
+        //                                             const EdgeInsets.all(6.0),
+        //                                         child: Text(
+        //                                           "\$ ${latestData.listingPrice}",
+        //                                           style: TextStyle(
+        //                                               fontSize: 18,
+        //                                               color: Colors.white),
+        //                                         ),
+        //                                       )),
+        //                                 ),
+        //                                 Spacer(),
+        //                                 IconButton(
+        //                                     icon: Icon(
+        //                                       Icons.favorite_border,
+        //                                       color: Colors.white,
+        //                                     ),
+        //                                     onPressed: () {}),
+        //                               ],
+        //                             ),
+        //                           )
+        //                         ],
+        //                       ),
+        //                       Padding(
+        //                         padding: const EdgeInsets.only(left: 8.0),
+        //                         child: Text(
+        //                           "${latestData.listingTitle}",
+        //                           style: TextStyle(
+        //                               fontSize: 17,
+        //                               fontWeight: FontWeight.bold),
+        //                         ),
+        //                       ),
+        //                       SizedBox(
+        //                         height: 5,
+        //                       ),
+        //                       Expanded(
+        //                         child: Column(
+        //                           mainAxisAlignment: MainAxisAlignment.center,
+        //                           crossAxisAlignment: CrossAxisAlignment.center,
+        //                           children: [
+        //                             Row(
+        //                               mainAxisAlignment:
+        //                                   MainAxisAlignment.center,
+        //                               crossAxisAlignment:
+        //                                   CrossAxisAlignment.center,
+        //                               children: [
+        //                                 Column(
+        //                                   mainAxisAlignment:
+        //                                       MainAxisAlignment.start,
+        //                                   crossAxisAlignment:
+        //                                       CrossAxisAlignment.start,
+        //                                   children: [
+        //                                     Padding(
+        //                                       padding: const EdgeInsets.only(
+        //                                           left: 4.0),
+        //                                       child: Row(
+        //                                         mainAxisAlignment:
+        //                                             MainAxisAlignment.center,
+        //                                         crossAxisAlignment:
+        //                                             CrossAxisAlignment.center,
+        //                                         children: [
+        //                                           Icon(
+        //                                             Icons.person,
+        //                                             color: Colors.red,
+        //                                           ),
+        //                                           Text("1 month ago"),
+        //                                         ],
+        //                                       ),
+        //                                     ),
+        //                                     SizedBox(
+        //                                       height: 4,
+        //                                     ),
+        //                                     Padding(
+        //                                       padding: const EdgeInsets.only(
+        //                                           left: 4.0),
+        //                                       child: Row(
+        //                                         mainAxisAlignment:
+        //                                             MainAxisAlignment.start,
+        //                                         crossAxisAlignment:
+        //                                             CrossAxisAlignment.start,
+        //                                         children: [
+        //                                           Icon(
+        //                                             Icons.tour,
+        //                                             color: Colors.red,
+        //                                           ),
+        //                                           Padding(
+        //                                             padding:
+        //                                                 const EdgeInsets.all(
+        //                                                     4.0),
+        //                                             child: Text(
+        //                                                 "Beds:${latestData.customFields['33']}"),
+        //                                           ),
+        //                                         ],
+        //                                       ),
+        //                                     ),
+        //                                     SizedBox(
+        //                                       height: 3,
+        //                                     ),
+        //                                     Padding(
+        //                                       padding: const EdgeInsets.only(
+        //                                           left: 4.0),
+        //                                       child: Row(
+        //                                         children: [
+        //                                           Icon(
+        //                                             Icons.keyboard,
+        //                                             color: Colors.red,
+        //                                           ),
+        //                                           Text(
+        //                                               "Type:${latestData.customFields['32']}"),
+        //                                         ],
+        //                                       ),
+        //                                     ),
+        //                                   ],
+        //                                 ),
+        //                                 Spacer(),
+        //                                 Padding(
+        //                                   padding:
+        //                                       const EdgeInsets.only(right: 4.0),
+        //                                   child: Column(
+        //                                     // mainAxisAlignment:
+        //                                     //     MainAxisAlignment.start,
+        //                                     // crossAxisAlignment:
+        //                                     //     CrossAxisAlignment.start,
+        //                                     children: [
+        //                                       Row(
+        //                                         // mainAxisAlignment:
+        //                                         //     MainAxisAlignment.start,
+        //                                         // crossAxisAlignment:
+        //                                         //     CrossAxisAlignment.start,
+        //                                         children: [
+        //                                           Icon(
+        //                                             Icons.location_on_outlined,
+        //                                             color: Colors.red,
+        //                                           ),
+        //                                           Text(latestData.stateAbbr),
+        //                                         ],
+        //                                       ),
+        //                                       SizedBox(
+        //                                         height: 4,
+        //                                       ),
+        //                                       Padding(
+        //                                         padding: const EdgeInsets.only(
+        //                                             left: 20.0, right: 5),
+        //                                         child: Row(
+        //                                           children: [
+        //                                             Padding(
+        //                                               padding:
+        //                                                   const EdgeInsets.only(
+        //                                                       right: 3.0),
+        //                                               child: Icon(
+        //                                                 Icons.adb_sharp,
+        //                                                 color: Colors.red,
+        //                                               ),
+        //                                             ),
+        //                                             Text(
+        //                                                 "Bath:${latestData.customFields['34']}"),
+        //                                           ],
+        //                                         ),
+        //                                       ),
+        //                                       SizedBox(
+        //                                         height: 4,
+        //                                       ),
+        //                                       Padding(
+        //                                         padding: const EdgeInsets.only(
+        //                                             left: 2.0, right: 3),
+        //                                         child: Row(
+        //                                           children: [
+        //                                             Icon(
+        //                                               Icons.border_style,
+        //                                               color: Colors.red,
+        //                                             ),
+        //                                             Padding(
+        //                                               padding:
+        //                                                   const EdgeInsets.only(
+        //                                                       left: 4.0),
+        //                                               child: Text(
+        //                                                   "sq.ft${latestData.customFields['38']}"),
+        //                                             ),
+        //                                           ],
+        //                                         ),
+        //                                       ),
+        //                                     ],
+        //                                   ),
+        //                                 ),
+        //                               ],
+        //                             ),
+        //                             SizedBox(
+        //                               height: 2,
+        //                             ),
+        //                           ],
+        //                         ),
+        //                       ),
+        //                       Row(
+        //                         children: [
+        //                           Padding(
+        //                             padding: const EdgeInsets.only(left: 4.0),
+        //                             child: Container(
+        //                               decoration: BoxDecoration(
+        //                                   borderRadius:
+        //                                       BorderRadius.circular(5),
+        //                                   color: Colors.red),
+        //                               child: Padding(
+        //                                 padding: const EdgeInsets.all(8.0),
+        //                                 child: Container(
+        //                                   child: Text(
+        //                                     "Property for Buy",
+        //                                     style: TextStyle(
+        //                                         fontSize: 17,
+        //                                         color: Colors.white),
+        //                                   ),
+        //                                 ),
+        //                               ),
+        //                             ),
+        //                           ),
+        //                           Spacer(),
+        //                           Padding(
+        //                             padding: const EdgeInsets.only(right: 4.0),
+        //                             child: Container(
+        //                               decoration: BoxDecoration(
+        //                                 color: Colors.black,
+        //                                 borderRadius: BorderRadius.circular(5),
+        //                               ),
+        //                               child: InkWell(
+        //                                 onTap: () {},
+        //                                 child: Padding(
+        //                                   padding: const EdgeInsets.only(
+        //                                       right: 6.0, top: 6, bottom: 2),
+        //                                   child: Row(
+        //                                     children: [
+        //                                       Padding(
+        //                                         padding: const EdgeInsets.only(
+        //                                             left: 8.0),
+        //                                         child: Container(
+        //                                           padding: EdgeInsets.only(
+        //                                               right: 15),
+        //                                           child: Icon(
+        //                                             Icons
+        //                                                 .phone_enabled_outlined,
+        //                                             size: 30,
+        //                                             color: Colors.white,
+        //                                           ),
+        //                                         ),
+        //                                       ),
+        //                                       Text(
+        //                                         "    Call",
+        //                                         style: TextStyle(
+        //                                             fontSize: 14,
+        //                                             color: Colors.white),
+        //                                       )
+        //                                     ],
+        //                                   ),
+        //                                 ),
+        //                               ),
+        //                             ),
+        //                           ),
+        //                         ],
+        //                       ),
+        //                       SizedBox(
+        //                         height: 3,
+        //                       )
+        //                     ],
+        //                   ),
+        //                 ),
+        //               ),
+        //             ),
+        //           ),
+        //         );
+        //       },
+        //     ),
+        //   );
+        // }),
 
         SizedBox(
           height: 20,

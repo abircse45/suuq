@@ -1,7 +1,5 @@
 import 'package:http/http.dart' as http;
 import 'package:suuq_somali/models/all_ads_model.dart';
-import 'package:suuq_somali/models/anything_model.dart';
-import 'package:suuq_somali/models/car_model.dart';
 
 class AllAdsService {
   Future<AllAds> fetchData() async {
@@ -10,10 +8,8 @@ class AllAdsService {
     if (response.statusCode == 200) {
       var allAds = response.body;
       return allAdsFromJson(allAds);
-    }else{
+    } else {
       return null;
     }
   }
 }
-
-

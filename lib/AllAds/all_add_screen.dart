@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:html_character_entities/html_character_entities.dart';
 import 'package:suuq_somali/controller/all_ads_controller.dart';
-import 'package:suuq_somali/screen/all_ads_details_screen.dart';
 import 'package:suuq_somali/utils/app_theme.dart';
+
+import 'all_ads_details_screen.dart';
 
 class AllAddScreen extends StatelessWidget {
   final allAdsController = Get.put(AllAdsController());
@@ -112,7 +114,7 @@ class AllAddScreen extends StatelessWidget {
                                           Padding(
                                             padding: const EdgeInsets.only(left:9.0),
                                             child: Text(
-                                              alladsData.listingTitle,
+                                                HtmlCharacterEntities.decode(alladsData.listingTitle,),
                                               style: TextStyle(
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.w700),

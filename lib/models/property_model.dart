@@ -22,7 +22,7 @@ class NewProperty {
   List<Featured> featured;
   List<Latest> latest;
   Map<String, City> cities;
-  Map<String, State> states;
+  Map<String, StateData> states;
   Map<String, CustomField> customFields;
 
   factory NewProperty.fromJson(Map<String, dynamic> json) => NewProperty(
@@ -30,7 +30,7 @@ class NewProperty {
     featured: List<Featured>.from(json["featured"].map((x) => Featured.fromJson(x))),
     latest: List<Latest>.from(json["latest"].map((x) => Latest.fromJson(x))),
     cities: Map.from(json["cities"]).map((k, v) => MapEntry<String, City>(k, City.fromJson(v))),
-    states: Map.from(json["states"]).map((k, v) => MapEntry<String, State>(k, State.fromJson(v))),
+    states: Map.from(json["states"]).map((k, v) => MapEntry<String, StateData>(k, StateData.fromJson(v))),
     customFields: Map.from(json["custom_fields"]).map((k, v) => MapEntry<String, CustomField>(k, CustomField.fromJson(v))),
   );
 
@@ -332,8 +332,8 @@ class Latest {
   };
 }
 
-class State {
-  State({
+class StateData {
+  StateData({
     this.stateId,
     this.stateName,
     this.stateAbbr,
@@ -349,7 +349,7 @@ class State {
   CountryAbbr countryAbbr;
   String countryId;
 
-  factory State.fromJson(Map<String, dynamic> json) => State(
+  factory StateData.fromJson(Map<String, dynamic> json) => StateData(
     stateId: json["state_id"],
     stateName: json["state_name"],
     stateAbbr: json["state_abbr"],

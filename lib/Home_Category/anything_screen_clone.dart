@@ -4,15 +4,14 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:suuq_somali/animation/FadeAnimation.dart';
-import 'package:suuq_somali/anything/anythings_list_details.dart';
+import 'file:///D:/suuqsomali/lib/Home_Category/anythings_list_details.dart';
 import 'package:suuq_somali/car/CarPage.dart';
 import 'package:suuq_somali/controller/anything_controller.dart';
+import 'package:suuq_somali/models/anything_model.dart';
 import 'package:suuq_somali/property/PropertyPage.dart';
 import 'package:suuq_somali/utils/Utility.dart';
 import 'package:suuq_somali/utils/app_theme.dart';
 
-import '../DrawerScreen.dart';
-import '../home_bottom.dart';
 
 class AnythingPageClone extends StatefulWidget {
   @override
@@ -24,6 +23,10 @@ class _AnythingPageCloneState extends State<AnythingPageClone> {
 
   @override
   Widget build(BuildContext context) {
+
+
+
+
     return SingleChildScrollView(
       physics: BouncingScrollPhysics(),
       child: Column(
@@ -39,38 +42,32 @@ class _AnythingPageCloneState extends State<AnythingPageClone> {
           SizedBox(
             height: 6,
           ),
-          Row(
-            children: [
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => PropertyPage()),
-                    );
-                  },
-                  child: FadeAnimation(
-                    0.2,
-                    ItemCard("assets/images/real-state.png", "Property"),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CarPage()),
-                    );
-                  },
-                  child: FadeAnimation(
-                    0.2,
-                    ItemCard("assets/images/car.png", "Car"),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          // Row(
+          //   children: [
+          //     Expanded(
+          //       child: InkWell(
+          //         onTap: () {
+          //
+          //         },
+          //         child: FadeAnimation(
+          //           0.2,
+          //           ItemCard("assets/images/real-state.png", "Property"),
+          //         ),
+          //       ),
+          //     ),
+          //     Expanded(
+          //       child: InkWell(
+          //         onTap: () {
+          //
+          //         },
+          //         child: FadeAnimation(
+          //           0.2,
+          //           ItemCard("assets/images/car.png", "Car"),
+          //         ),
+          //       ),
+          //     ),
+          //   ],
+          // ),
           Container(
             color: HexColor("#ededed"),
             child: Obx(
@@ -83,20 +80,34 @@ class _AnythingPageCloneState extends State<AnythingPageClone> {
                     ),
                   );
                 }
-                return GridView.builder(
+              return  GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
+                    crossAxisCount: 3,
                   ),
                   shrinkWrap: true,
                   primary: false,
-                  itemCount: anyThingController.getAnything.value.cats.length,
+                  itemCount: anyThingController.finalList.length,
                   itemBuilder: (_, index) {
                     var anything =
-                        anyThingController.getAnything.value.cats[index];
+                    anyThingController.finalList[index];
                     return InkWell(
                       onTap: () {
-                        Get.to(AnythingCategoryDetails(cat: anything),
-                            transition: Transition.zoom);
+
+                        if(anything.catId=="001"){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => PropertyPage()),
+                          );
+                        }else if(anything.catId == "002"){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => CarPage()),
+                          );
+                        }else {
+                          Get.to(AnythingCategoryDetails(cat: anything,
+                              ),
+                              transition: Transition.zoom);
+                        }
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(
@@ -104,26 +115,24 @@ class _AnythingPageCloneState extends State<AnythingPageClone> {
                         child: Container(
                           decoration: BoxDecoration(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(15.0))),
-                          height: 150,
-                          width: 500,
+                              BorderRadius.all(Radius.circular(15.0))),
+                          height: 100,
+                          width: 300,
                           child: Material(
                             child: DecoratedBox(
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(15.0)),
+                                BorderRadius.all(Radius.circular(15.0)),
                               ),
                               child: Container(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Image(
-                                      height: 60,
-                                      width: 60,
-                                      image: NetworkImage(
-                                        anything.catImg,
-                                      ),
+                                      height: 40,
+                                      width: 40,
+                                      image:  ImageSet(anything),
                                     ),
                                     SizedBox(height: 12.0),
                                     Padding(
@@ -134,7 +143,7 @@ class _AnythingPageCloneState extends State<AnythingPageClone> {
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           color: Colors.black,
-                                          fontSize: 18,
+                                          fontSize: 15,
                                         ),
                                       ),
                                     ),
@@ -196,6 +205,18 @@ class _AnythingPageCloneState extends State<AnythingPageClone> {
       ),
     );
   }
+
+  ImageProvider<Object> ImageSet(Cat cat){
+    if(cat.catId == "001"){
+      return AssetImage("assets/images/real-state.png");
+    }else if(cat.catId == "002"){
+      return AssetImage("assets/images/car.png");
+    }else{
+      return NetworkImage(
+        cat.catImg,
+      );
+    }
+  }
 }
 
 class ItemCard extends StatelessWidget {
@@ -211,8 +232,8 @@ class ItemCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(15.0))),
-        height: 150,
-        width: 500,
+        height: 120,
+        width: 300,
         child: Material(
           child: DecoratedBox(
             decoration: BoxDecoration(

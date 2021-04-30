@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:suuq_somali/models/search_model.dart';
 
 class CarSearchService {
-  Future<Search> carFetchSearchData(
+  Future<FilterPropertySearch> carFetchSearchData(
       String cat_id_buy,
       String city,
       String selectedArea,
@@ -21,7 +21,7 @@ class CarSearchService {
 
     if (response.statusCode == 200) {
       var search = response.body;
-      return searchFromJson(search);
+      return filterPropertySearchFromJson(search);
     } else {
       return null;
     }

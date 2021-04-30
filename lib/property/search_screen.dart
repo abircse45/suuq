@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:suuq_somali/controller/search_controller.dart';
+import 'package:suuq_somali/controller/filter_search_controller_property.dart';
 import 'package:suuq_somali/exception/no_data_available.dart';
 import 'package:suuq_somali/utils/app_theme.dart';
 
@@ -11,9 +11,10 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  final searchController = Get.put(SearchController());
+
   @override
   Widget build(BuildContext context) {
-    final searchController = Get.put(SearchController());
 
     return Scaffold(
       backgroundColor: HexColor("#ededed"),

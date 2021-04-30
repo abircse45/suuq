@@ -3,16 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:suuq_somali/bindings/bindings.dart';
-import 'package:suuq_somali/home_bottom.dart';
 import 'package:suuq_somali/screen/tabbar_page.dart';
 
-import 'package:suuq_somali/utils/Utility.dart';
 
 import 'localization/demo_localization.dart';
 import 'localization/language_constants.dart';
 
 void main() {
-  ErrorWidget.builder = (FlutterErrorDetails details) => Container();
+  //ErrorWidget.builder = (FlutterErrorDetails details) => Container();
   // setupLocator();
   runApp(MyApp());
 }
@@ -46,6 +44,7 @@ class _MyAppState extends State<MyApp> {
     });
     super.didChangeDependencies();
   }
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -59,9 +58,6 @@ class _MyAppState extends State<MyApp> {
       supportedLocales: [
         Locale("en", "US"),
         Locale("ar", "SA"),
-        Locale("so_SO","SO"),
-
-
       ],
       localizationsDelegates: [
         DemoLocalization.delegate,
@@ -94,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void _Navigator() {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (_, __, ___) => HomeBottom(Utility.HOMEBOTTOMTAB),
+        pageBuilder: (_, __, ___) => TabBarScreen(),
         transitionDuration: Duration(milliseconds: 2000),
         transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
           return Opacity(
